@@ -29,6 +29,13 @@ class StateResource extends Resource
             ->schema([
                 Forms\Components\Section::make('State Details')
                     ->schema([
+                        // Forms\Components\Select::make('status')
+                        //     ->options([
+                        //         'active' => 'Active',
+                        //         'inactive' => 'Inactive'
+                        //     ])
+                        //     ->native(false)
+                        //     ->required(),
                         Forms\Components\Select::make('country_id')
                             ->relationship(name: 'country', titleAttribute: 'name')
                             ->searchable()
@@ -108,6 +115,4 @@ class StateResource extends Resource
             'edit' => Pages\EditState::route('/{record}/edit'),
         ];
     }
-
-
 }
