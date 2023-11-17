@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\CountryResource\RelationManagers;
+namespace App\Filament\Resources\CityResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -10,15 +10,15 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class StatesRelationManager extends RelationManager
+class EmployeesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'states';
+    protected static string $relationship = 'employees';
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('first_name')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -27,11 +27,9 @@ class StatesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('name')
+            ->recordTitleAttribute('first_name')
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                ->sortable(),
-                Tables\Columns\TextColumn::make('name')->sortable(),
+                Tables\Columns\TextColumn::make('first_name'),
             ])
             ->filters([
                 //
@@ -49,6 +47,7 @@ class StatesRelationManager extends RelationManager
                 ]),
             ]);
     }
+
     public function isReadOnly(): bool
     {
         return false;

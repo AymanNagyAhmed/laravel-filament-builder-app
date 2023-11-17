@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\CountryResource\RelationManagers;
+namespace App\Filament\Resources\StateResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,8 +14,6 @@ use Filament\Forms\Set;
 use Illuminate\Support\Collection;
 use App\Models\State;
 use App\Models\City;
-
-
 
 class EmployeesRelationManager extends RelationManager
 {
@@ -111,10 +109,9 @@ class EmployeesRelationManager extends RelationManager
             ->recordTitleAttribute('first_name')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->sortable(),
+                ->sortable(),
                 Tables\Columns\TextColumn::make('first_name')
-                    ->sortable(),
-            ])
+                ->sortable(),            ])
             ->filters([
                 //
             ])
@@ -131,7 +128,6 @@ class EmployeesRelationManager extends RelationManager
                 ]),
             ]);
     }
-
     public function isReadOnly(): bool
     {
         return false;
