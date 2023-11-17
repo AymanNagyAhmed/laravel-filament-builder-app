@@ -15,6 +15,10 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\DatePicker;
+ use Illuminate\Support\Carbon;
+ use Filament\Tables\Filters\Filter;
+
 
 class StateResource extends Resource
 {
@@ -22,7 +26,7 @@ class StateResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'System Management';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
     public static function form(Form $form): Form
     {
         return $form
@@ -52,9 +56,11 @@ class StateResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('country.name')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable(isIndividual: true, isGlobal: false),
                 Tables\Columns\TextColumn::make('name')
                     ->label('State name')
                     ->sortable()
@@ -67,9 +73,36 @@ class StateResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])->defaultSort('country.name', 'desc')
+
+            ])->defaultSort('id', 'asc')
             ->filters([
-                //
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        if ($data['created_from'] ?? null) {
+                            $indicators['created_from'] = 'Created from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                        }
+                        if ($data['created_until'] ?? null) {
+                            $indicators['created_until'] = 'Created until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                        }
+
+                        return $indicators;
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -112,6 +145,7 @@ class StateResource extends Resource
         return [
             'index' => Pages\ListStates::route('/'),
             'create' => Pages\CreateState::route('/create'),
+            // 'view' => Pages\ViewState::route('/{record}'),
             'edit' => Pages\EditState::route('/{record}/edit'),
         ];
     }

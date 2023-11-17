@@ -2,37 +2,26 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Models\User;
+use App\Filament\Resources\TeamResource\Pages;
+use App\Filament\Resources\TeamResource\RelationManagers;
+use App\Models\Team;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\DatePicker;
-use Illuminate\Support\Carbon;
+ use Illuminate\Support\Carbon;
+ use Filament\Tables\Filters\Filter;
 
-class UserResource extends Resource
+
+class TeamResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = Team::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
-    protected static ?string $navigationGroup = 'User Management';
-
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
-
-    public static function getNavigationBadgeColor(): string|array|null
-    {
-        return static::getModel()::count() > 10 ? 'warning' : 'success';
-    }
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
@@ -41,13 +30,7 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
-                Forms\Components\TextInput::make('password')
-                    ->password()
+                Forms\Components\TextInput::make('slug')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -61,11 +44,8 @@ class UserResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -74,11 +54,8 @@ class UserResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ])->defaultSort('id')
             ->filters([
-                Filter::make('is_admin')
-                    ->query(fn (Builder $query): Builder => $query->where('is_admin', true))
-                    ->label('Admins'),
                 Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from'),
@@ -115,9 +92,6 @@ class UserResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])
-            ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
             ]);
     }
 
@@ -131,10 +105,10 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'view' => Pages\ViewUser::route('/{record}'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListTeams::route('/'),
+            'create' => Pages\CreateTeam::route('/create'),
+            'view' => Pages\ViewTeam::route('/{record}'),
+            'edit' => Pages\EditTeam::route('/{record}/edit'),
         ];
     }
 }

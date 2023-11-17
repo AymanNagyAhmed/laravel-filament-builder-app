@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string('middle_name');
             $table->string('address');
             $table->char('zip_code');
-            $table->date('date_of_birth');
-            $table->date('date_hired');
+            $table->date('date_of_birth')->min('1950-01-01');
+            $table->date('date_hired')->min('1990-01-01');
             $table->timestamps();
         });
     }

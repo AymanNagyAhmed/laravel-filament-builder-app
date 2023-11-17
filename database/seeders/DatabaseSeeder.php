@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Department;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,16 +15,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Admin User',
-        //     'email' => 'admin@admin.com',
-        //     'is_admin' => true
-        // ]);
-
-        $this->call(CountrySeeder::class);
-        $this->call(StateSeeder::class);
-        $this->call(CitySeeder::class);
+        $this->call([
+            UserSeeder::class,
+            CountrySeeder::class,
+            StateSeeder::class,
+            CitySeeder::class,
+            TeamSeeder::class,
+            DepartmentSeeder::class,
+            EmployeeSeeder::class,
+        ]);
     }
 }

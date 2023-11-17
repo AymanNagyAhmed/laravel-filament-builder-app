@@ -12,6 +12,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\DatePicker;
+ use Illuminate\Support\Carbon;
+ use Filament\Tables\Filters\Filter;
 
 class CountryResource extends Resource
 {
@@ -48,7 +51,9 @@ class CountryResource extends Resource
     {
         return $table
         ->columns([
-            Tables\Columns\TextColumn::make('name')
+            Tables\Columns\TextColumn::make('id')
+                ->sortable(),
+                Tables\Columns\TextColumn::make('name')
                 ->searchable()
                 ->sortable(),
             Tables\Columns\TextColumn::make('code')
@@ -66,7 +71,33 @@ class CountryResource extends Resource
                 ->toggleable(isToggledHiddenByDefault: true),
         ])
         ->filters([
-            //
+            Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        if ($data['created_from'] ?? null) {
+                            $indicators['created_from'] = 'Created from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                        }
+                        if ($data['created_until'] ?? null) {
+                            $indicators['created_until'] = 'Created until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                        }
+
+                        return $indicators;
+                    }),
         ])
         ->actions([
             Tables\Actions\ViewAction::make(),

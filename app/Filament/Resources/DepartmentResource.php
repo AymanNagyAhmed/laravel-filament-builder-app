@@ -2,27 +2,38 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Models\User;
+use App\Filament\Resources\DepartmentResource\Pages;
+use App\Filament\Resources\DepartmentResource\RelationManagers;
+use App\Models\Department;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\DatePicker;
-use Illuminate\Support\Carbon;
+ use Illuminate\Support\Carbon;
+ use Filament\Tables\Filters\Filter;
 
-class UserResource extends Resource
+
+class DepartmentResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = Department::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
-    protected static ?string $navigationGroup = 'User Management';
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+
+    protected static ?string $navigationLabel = 'Department';
+
+    protected static ?string $modelLabel = 'Department';
+
+    protected static ?string $navigationGroup = 'System Management';
+
+    protected static ?int $navigationSort = 3;
 
     public static function getNavigationBadge(): ?string
     {
@@ -38,18 +49,12 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Section::make('Department Details')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                    ])
             ]);
     }
 
@@ -58,14 +63,10 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->sortable(),
+                ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('employees_count')->counts('employees'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -76,9 +77,6 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Filter::make('is_admin')
-                    ->query(fn (Builder $query): Builder => $query->where('is_admin', true))
-                    ->label('Admins'),
                 Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from'),
@@ -121,6 +119,21 @@ class UserResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Department Info')
+                    ->schema([
+                        TextEntry::make('name'),
+                        TextEntry::make('employees_count')
+                            ->state(function (Model $record): int {
+                                return $record->employees()->count();
+                            }),
+                    ])->columns(2)
+            ]);
+    }
+
     public static function getRelations(): array
     {
         return [
@@ -131,10 +144,10 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'view' => Pages\ViewUser::route('/{record}'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListDepartments::route('/'),
+            'create' => Pages\CreateDepartment::route('/create'),
+            //'view' => Pages\ViewDepartment::route('/{record}'),
+            'edit' => Pages\EditDepartment::route('/{record}/edit'),
         ];
     }
 }
