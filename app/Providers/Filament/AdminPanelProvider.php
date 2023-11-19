@@ -40,6 +40,12 @@ class AdminPanelProvider extends PanelProvider
             // ->brandName('')
             // ->brandLogo(asset('images/logo-transparent.png'))
             // ->favicon(asset('favicon.ico'))
+            ->navigationGroups([
+                // value of $navigationGroup in each ModelResource
+                'Employee Management',
+                'System Management',
+                'User Management'
+            ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([

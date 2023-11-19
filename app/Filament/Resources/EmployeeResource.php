@@ -37,35 +37,57 @@ class EmployeeResource extends Resource
 
     protected static ?string $navigationGroup = 'Employee Management';
 
+    /**
+     * To enable global search
+     */
     protected static ?string $recordTitleAttribute = 'first_name';
 
-    public static function getGlobalSearchResultTitle(Model $record): string
-    {
-        return $record->last_name;
-    }
+    /**
+     * Global Search in columns or in relation
+     */
+    // public static function getGlobalSearchResultTitle(Model $record): string
+    // {
+    //     return $record->last_name;
+    // }
 
+    /**
+     * Global Search in multiple columns or in relation
+     */
     public static function getGloballySearchableAttributes(): array
     {
-        return ['first_name', 'last_name', 'middle_name'];
+        return ['first_name', 'last_name', 'middle_name', 'country.name'];
     }
 
+    /**
+     * Display global search details
+     */
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            'Country' => $record->country->name
+            'Country' => $record->country->name,
+            'Full Name' => "{$record->first_name} {$record->middle_name} {$record->last_name}",
         ];
     }
 
+    /**
+     * Eger loading for global search details
+     */
     public static function getGlobalSearchEloquentQuery(): Builder
     {
         return parent::getGlobalSearchEloquentQuery()->with(['country']);
     }
 
+    /**
+     * Display global search details
+     */
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
     }
 
+    /**
+     * Display global search details
+     */
     public static function getNavigationBadgeColor(): string|array|null
     {
         return static::getModel()::count() > 10 ? 'warning' : 'success';
@@ -111,7 +133,7 @@ class EmployeeResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required(),
-                            Forms\Components\Select::make('team_id')
+                        Forms\Components\Select::make('team_id')
                             ->label('Team')
                             ->relationship(name: 'team', titleAttribute: 'name')
                             ->searchable()

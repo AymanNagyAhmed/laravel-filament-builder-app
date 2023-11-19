@@ -15,8 +15,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\DatePicker;
- use Illuminate\Support\Carbon;
- use Filament\Tables\Filters\Filter;
+use Illuminate\Support\Carbon;
+use Filament\Tables\Filters\Filter;
 
 class CountryResource extends Resource
 {
@@ -29,6 +29,21 @@ class CountryResource extends Resource
     protected static ?string $slug = 'Countries';
     protected static ?int $navigationSort = 1;
 
+    /**
+     * Display global search details
+     */
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    /**
+     * Display global search details
+     */
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return static::getModel()::count() > 10 ? 'warning' : 'success';
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -52,28 +67,28 @@ class CountryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-        ->columns([
-            Tables\Columns\TextColumn::make('id')
-                ->sortable(),
+            ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('name')
-                ->searchable()
-                ->sortable(),
-            Tables\Columns\TextColumn::make('code')
-                ->searchable()
-                ->sortable(),
-            Tables\Columns\TextColumn::make('phonecode')
-                ->numeric(),
-            Tables\Columns\TextColumn::make('created_at')
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            Tables\Columns\TextColumn::make('updated_at')
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-        ])
-        ->filters([
-            Filter::make('created_at')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('code')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('phonecode')
+                    ->numeric(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from'),
                         DatePicker::make('created_until'),
@@ -100,19 +115,19 @@ class CountryResource extends Resource
 
                         return $indicators;
                     }),
-        ])
-        ->actions([
-            Tables\Actions\ViewAction::make(),
-            Tables\Actions\EditAction::make(),
-        ])
-        ->bulkActions([
-            Tables\Actions\BulkActionGroup::make([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]),
-        ])
-        ->emptyStateActions([
-            Tables\Actions\CreateAction::make(),
-        ]);
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ])
+            ->emptyStateActions([
+                Tables\Actions\CreateAction::make(),
+            ]);
     }
 
     public static function getRelations(): array

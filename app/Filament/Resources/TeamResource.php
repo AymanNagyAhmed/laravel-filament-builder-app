@@ -13,8 +13,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\DatePicker;
- use Illuminate\Support\Carbon;
- use Filament\Tables\Filters\Filter;
+use Illuminate\Support\Carbon;
+use Filament\Tables\Filters\Filter;
 
 
 class TeamResource extends Resource
@@ -23,6 +23,21 @@ class TeamResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    /**
+     * Display global search details
+     */
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    /**
+     * Display global search details
+     */
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return static::getModel()::count() > 10 ? 'warning' : 'success';
+    }
     public static function form(Form $form): Form
     {
         return $form
