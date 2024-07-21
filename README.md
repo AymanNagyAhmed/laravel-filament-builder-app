@@ -24,11 +24,3 @@ $ php artisan db:seed
 
 $ php artisan serve
   ```
-
-|            |—— composer.json
-|            |—— src
-|                |—— Assert.php
-|                |—— InvalidArgumentException.php
-|                |—— Mixin.php
-|—— vite.config.js
-```
